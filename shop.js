@@ -1,5 +1,5 @@
 /* ============================================================
-   ShopNow – Product Modal + Cart + Checkout Logic
+   ShopNow – Product Modal + Cart + Checkout + Search Logic
    ============================================================ */
 
 // ── PRODUCT DATA ──────────────────────────────────────────
@@ -55,19 +55,134 @@ function showToast(msg, type) {
   t._timer = setTimeout(() => t.classList.remove('sn-toast--show'), 2800);
 }
 
+// ── SEARCH ────────────────────────────────────────────────
+function escapeRegex(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function highlightText(text, query) {
+  if (!query) return text;
+  return text.replace(
+    new RegExp('(' + escapeRegex(query) + ')', 'gi'),
+    '<mark style="background:#ffe680;color:#5a4000;border-radius:2px;padding:0 1px">$1</mark>'
+  );
+}
+
+function filterProducts(query) {
+  const q = query.trim().toLowerCase();
+  let shown = 0;
+
+  document.querySelectorAll('.product-card').forEach(function(card) {
+    const id = Number(card.dataset.productId);
+    const product = products.find(function(p) { return p.id === id; });
+    if (!product) return;
+
+    const matches = !q || product.name.toLowerCase().includes(q);
+    card.style.display = matches ? '' : 'none';
+    if (matches) shown++;
+
+    // Store original name text once, then highlight on match
+    const nameEl = card.querySelector('.product-name, .product-title, h3, h4, p.name, [class*="name"]');
+    if (nameEl) {
+      if (nameEl.dataset.originalText === undefined) {
+        nameEl.dataset.originalText = nameEl.textContent;
+      }
+      nameEl.innerHTML = (matches && q)
+        ? highlightText(nameEl.dataset.originalText, query.trim())
+        : nameEl.dataset.originalText;
+    }
+  });
+
+  // Show/hide section headings when all cards in that section are hidden
+  ['flash-sale', 'recommended'].forEach(function(sectionClass) {
+    const section = document.querySelector('.' + sectionClass);
+    if (!section) return;
+    const visibleCards = section.querySelectorAll('.product-card:not([style*="display: none"])');
+    const heading = section.querySelector('h2, h3, .section-title');
+    if (heading) heading.style.display = visibleCards.length === 0 ? 'none' : '';
+  });
+
+  // Empty state message
+  var emptyMsg = document.getElementById('sn-search-empty');
+  if (!emptyMsg) {
+    emptyMsg = document.createElement('div');
+    emptyMsg.id = 'sn-search-empty';
+    emptyMsg.style.cssText = [
+      'text-align:center',
+      'padding:3rem 1rem',
+      'color:#999',
+      'font-size:15px',
+      'display:none'
+    ].join(';');
+    emptyMsg.innerHTML = '<i class="fas fa-search" style="font-size:32px;display:block;margin-bottom:12px;opacity:0.4"></i>No products found for "<span id="sn-search-term"></span>"';
+    var lastSection = document.querySelector('.recommended') || document.querySelector('.flash-sale');
+    if (lastSection) lastSection.after(emptyMsg);
+    else document.body.appendChild(emptyMsg);
+  }
+
+  if (shown === 0 && q) {
+    emptyMsg.style.display = 'block';
+    var termEl = document.getElementById('sn-search-term');
+    if (termEl) termEl.textContent = query.trim();
+  } else {
+    emptyMsg.style.display = 'none';
+  }
+
+  // Update result count hint on the search input if it has a sibling hint element
+  var hint = document.getElementById('sn-search-count');
+  if (hint) {
+    hint.textContent = q
+      ? (shown + ' result' + (shown !== 1 ? 's' : '') + ' found')
+      : '';
+  }
+}
+
+function initSearch() {
+  // Try common search input selectors — adjust the selector to match your HTML
+  var input = document.querySelector(
+    'input[type="search"], ' +
+    '.search-bar input, ' +
+    '.search-input, ' +
+    'input[placeholder*="earch"]'
+  );
+
+  if (!input) {
+    console.warn('ShopNow search: no search input found. Check your selector in initSearch().');
+    return;
+  }
+
+  // Live filter as the user types
+  input.addEventListener('input', function() {
+    filterProducts(this.value);
+  });
+
+  // Also handle Enter key (optional, for keyboards)
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      this.value = '';
+      filterProducts('');
+    }
+  });
+
+  // Clear search when input is cleared via the browser's native X button
+  input.addEventListener('search', function() {
+    filterProducts(this.value);
+  });
+}
+
 // ── INJECT DATA-IDS onto existing cards ───────────────────
 function injectProductIds() {
-  document.querySelectorAll('.flash-sale .product-card').forEach((card, i) => {
+  document.querySelectorAll('.flash-sale .product-card').forEach(function(card, i) {
     card.dataset.productId = i + 1;
   });
-  document.querySelectorAll('.recommended .product-card').forEach((card, i) => {
+  document.querySelectorAll('.recommended .product-card').forEach(function(card, i) {
     card.dataset.productId = i + 6;
   });
 }
 
 // ── ATTACH CLICK TO ALL PRODUCT CARDS ─────────────────────
 function attachCardClicks() {
-  document.querySelectorAll('.product-card').forEach(card => {
+  document.querySelectorAll('.product-card').forEach(function(card) {
     card.style.cursor = 'pointer';
     card.addEventListener('click', function(e) {
       if (e.target.closest('.wishlist-btn')) return;
@@ -76,7 +191,7 @@ function attachCardClicks() {
     });
   });
 
-  document.querySelectorAll('.wishlist-btn').forEach(btn => {
+  document.querySelectorAll('.wishlist-btn').forEach(function(btn) {
     btn.addEventListener('click', function(e) {
       e.stopPropagation();
       const icon = this.querySelector('i');
@@ -95,7 +210,7 @@ function attachCardClicks() {
 
 // ── PRODUCT MODAL ──────────────────────────────────────────
 function openProductModal(id) {
-  const p = products.find(x => x.id === id);
+  const p = products.find(function(x) { return x.id === id; });
   if (!p) return;
   currentProduct = Object.assign({}, p, { qty: 1 });
 
@@ -129,7 +244,7 @@ function changeQty(delta) {
 
 function addToCart(andCheckout) {
   const p = currentProduct;
-  const existing = cart.find(x => x.id === p.id);
+  const existing = cart.find(function(x) { return x.id === p.id; });
   if (existing) existing.qty += p.qty;
   else cart.push({ id: p.id, name: p.name, price: p.price, icon: p.icon, qty: p.qty });
   saveCart();
@@ -163,29 +278,29 @@ function closeCheckout() {
 function renderCheckout() {
   const modal = document.getElementById('sn-checkoutModal');
   const stepNames = ['Cart', 'Shipping', 'Payment', 'Confirm'];
-  const stepBar = stepNames.map((s, i) =>
-    '<div class="co-step ' + (i + 1 === checkoutStep ? 'active' : '') + ' ' + (i + 1 < checkoutStep ? 'done' : '') + '">' +
-    '<div class="co-step-num">' + (i + 1 < checkoutStep ? '<i class="fas fa-check"></i>' : (i + 1)) + '</div>' +
-    '<span>' + s + '</span></div>' +
-    (i < stepNames.length - 1 ? '<div class="co-step-line"></div>' : '')
-  ).join('');
+  const stepBar = stepNames.map(function(s, i) {
+    return '<div class="co-step ' + (i + 1 === checkoutStep ? 'active' : '') + ' ' + (i + 1 < checkoutStep ? 'done' : '') + '">' +
+      '<div class="co-step-num">' + (i + 1 < checkoutStep ? '<i class="fas fa-check"></i>' : (i + 1)) + '</div>' +
+      '<span>' + s + '</span></div>' +
+      (i < stepNames.length - 1 ? '<div class="co-step-line"></div>' : '');
+  }).join('');
 
   let body = '';
 
   if (checkoutStep === 1) {
-    const rows = cart.map(item =>
-      '<div class="co-cart-row" data-id="' + item.id + '">' +
-      '<div class="co-cart-icon"><i class="fas ' + item.icon + '"></i></div>' +
-      '<div class="co-cart-info"><p class="co-cart-name">' + item.name + '</p>' +
-      '<div class="co-cart-controls">' +
-      '<button onclick="changeCartQty(' + item.id + ',-1)">&#8722;</button>' +
-      '<span>' + item.qty + '</span>' +
-      '<button onclick="changeCartQty(' + item.id + ',1)">+</button>' +
-      '<button class="co-remove" onclick="removeCartItem(' + item.id + ')"><i class="fas fa-trash"></i></button>' +
-      '</div></div>' +
-      '<div class="co-cart-price">' + fmt(item.price * item.qty) + '</div></div>'
-    ).join('');
-    const sub = cart.reduce((a, b) => a + b.price * b.qty, 0);
+    const rows = cart.map(function(item) {
+      return '<div class="co-cart-row" data-id="' + item.id + '">' +
+        '<div class="co-cart-icon"><i class="fas ' + item.icon + '"></i></div>' +
+        '<div class="co-cart-info"><p class="co-cart-name">' + item.name + '</p>' +
+        '<div class="co-cart-controls">' +
+        '<button onclick="changeCartQty(' + item.id + ',-1)">&#8722;</button>' +
+        '<span>' + item.qty + '</span>' +
+        '<button onclick="changeCartQty(' + item.id + ',1)">+</button>' +
+        '<button class="co-remove" onclick="removeCartItem(' + item.id + ')"><i class="fas fa-trash"></i></button>' +
+        '</div></div>' +
+        '<div class="co-cart-price">' + fmt(item.price * item.qty) + '</div></div>';
+    }).join('');
+    const sub = cart.reduce(function(a, b) { return a + b.price * b.qty; }, 0);
     const ship = sub >= 500 ? 0 : 79;
     body = '<div class="co-cart-list">' + rows + '</div>' +
       '<div class="co-summary">' +
@@ -216,7 +331,6 @@ function renderCheckout() {
       '<label class="co-radio"><input type="radio" name="delivery" value="Priority"/>' +
       '<span><strong>Priority Delivery</strong><em>1\u201515 minutes &nbsp;&bull;&nbsp; \u20B1149</em></span></label>' +
       '</div></div></div>';
-      
 
   } else if (checkoutStep === 3) {
     body = '<div class="co-form">' +
@@ -237,11 +351,11 @@ function renderCheckout() {
       '</div></div>';
 
   } else if (checkoutStep === 4) {
-    const sub = cart.reduce((a, b) => a + b.price * b.qty, 0);
+    const sub = cart.reduce(function(a, b) { return a + b.price * b.qty; }, 0);
     const ship = sub >= 500 ? 0 : 79;
-    const itemList = cart.map(i =>
-      '<li><span>' + i.name + ' \u00D7 ' + i.qty + '</span><span>' + fmt(i.price * i.qty) + '</span></li>'
-    ).join('');
+    const itemList = cart.map(function(i) {
+      return '<li><span>' + i.name + ' \u00D7 ' + i.qty + '</span><span>' + fmt(i.price * i.qty) + '</span></li>';
+    }).join('');
     body = '<div class="co-confirm">' +
       '<div class="co-confirm-icon"><i class="fas fa-clipboard-check"></i></div>' +
       '<h3>Review Your Order</h3>' +
@@ -398,4 +512,5 @@ document.addEventListener('DOMContentLoaded', function() {
   attachCardClicks();
   initCartClick();
   updateCartBadge();
+  initSearch();
 });
