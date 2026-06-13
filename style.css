@@ -2,7 +2,7 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --primary:       #94d887;
+  --primary:       #78ca68;
   --primary-dark:  #ffffff;
   --primary-light: #FFF1EE;
   --accent:        #F59E0B;
@@ -250,7 +250,7 @@ img { display: block; max-width: 100%; }
 
 .hero-main-banner {
 
-  background: linear-gradient(135deg, #94d887 0%, #F97316 60%, #FBBF24 100%);
+  background: linear-gradient(135deg, #78ca68 0%, #F97316 60%, #78ca68 100%);
   border-radius: var(--radius-lg);
   padding: 36px 40px;
   display: flex;
