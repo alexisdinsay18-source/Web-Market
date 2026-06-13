@@ -538,7 +538,7 @@
 .order-id-label { font-size: 13px; color: #888; margin-top: 12px; }
 .order-id-label strong { color: #EE4D2D; font-size: 15px; }
 .success-sub { font-size: 13px; color: #aaa; }
-
+    
 /* ── MOBILE ADJUSTMENTS ── */
 @media (max-width: 560px) {
   .pm-body { flex-direction: column; gap: 16px; }
