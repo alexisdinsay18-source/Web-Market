@@ -4,22 +4,27 @@
 
 // ── PRODUCT DATA ──────────────────────────────────────────
 const products = [
-  { id:1,  name:"Wireless Noise-Cancelling Headphones", price:899,  oldPrice:2350, discount:62, rating:4, sold:"1.2k", icon:"fa-headphones",   location:"Manila" },
-  { id:2,  name:"Premium Cotton Oversized Tee",         price:329,  oldPrice:599,  discount:45, rating:5, sold:"3.5k", icon:"fa-tshirt",       location:"Cebu" },
-  { id:3,  name:"Portable USB Blender Bottle 500ml",    price:549,  oldPrice:1099, discount:50, rating:4, sold:"890",  icon:"fa-blender",      location:"Davao" },
-  { id:4,  name:"Running Sneakers Lightweight Mesh",    price:1299, oldPrice:2099, discount:38, rating:4, sold:"2.1k", icon:"fa-shoe-prints",  location:"Cebu" },
-  { id:5,  name:"20000mAh Power Bank Fast Charge",      price:699,  oldPrice:2299, discount:70, rating:5, sold:"5k",   icon:"fa-solar-panel",  location:"Manila" },
-  { id:6,  name:'14" Laptop Sleeve Water-Resistant',    price:279,  oldPrice:null, discount:0,  rating:5, sold:"742",  icon:"fa-laptop",       location:"Cebu" },
-  { id:7,  name:"Ceramic Travel Mug with Lid 350ml",    price:399,  oldPrice:499,  discount:20, rating:4, sold:"318",  icon:"fa-mug-hot",      location:"Manila" },
-  { id:8,  name:"Foldable Floor Chair Cushion",         price:1499, oldPrice:null, discount:0,  rating:5, sold:"1.8k", icon:"fa-couch",        location:"Davao" },
-  { id:9,  name:'Ring Light 10" with Tripod Stand',     price:799,  oldPrice:1249, discount:35, rating:4, sold:"2.3k", icon:"fa-camera",       location:"Quezon City" },
-  { id:10, name:"Indoor Plant Succulent Set of 3",      price:349,  oldPrice:null, discount:0,  rating:5, sold:"956",  icon:"fa-seedling",     location:"Cebu" },
-  { id:11, name:"Smart Watch Fitness Tracker IP68",     price:1199, oldPrice:2649, discount:55, rating:4, sold:"4.7k", icon:"fa-watch",        location:"Manila" },
-  { id:12, name:"Watercolor Brush Pen Set 48 Colors",   price:459,  oldPrice:null, discount:0,  rating:5, sold:"621",  icon:"fa-paint-brush",  location:"Iloilo" },
-  { id:13, name:"Mini Desk Fan USB 3-Speed",            price:249,  oldPrice:349,  discount:28, rating:4, sold:"3.2k", icon:"fa-wind",         location:"Cebu" },
-  { id:14, name:"Hardcover Journal Dotted Grid A5",     price:199,  oldPrice:null, discount:0,  rating:5, sold:"1.1k", icon:"fa-book",         location:"Makati" },
-  { id:15, name:"Sunscreen SPF 50+ Lightweight Gel",    price:299,  oldPrice:499,  discount:40, rating:5, sold:"6.4k", icon:"fa-sun",          location:"Cebu" },
-];
+    { id:101, name:'Fresh Kangkong Bundle',         price:25,  oldPrice:null, discount:0,  rating:5, sold:'320',  icon:'fa-leaf',           location:'Iloilo', category:'vegetable' },
+      { id:103, name:'Tomato 1kg Pack',               price:80,  oldPrice:100,  discount:20, rating:5, sold:'540',  icon:'fa-apple-alt',      location:'Davao', category:'vegetable' },
+      { id:201, name:'Pork Liempo (Belly) 500g',      price:185, oldPrice:220,  discount:16, rating:5, sold:'890',  icon:'fa-drumstick-bite', location:'Cebu', category:'meat' },
+      { id:202, name:'Chicken Breast 1kg',            price:220, oldPrice:260,  discount:15, rating:4, sold:'1.2k', icon:'fa-drumstick-bite', location:'Manila', category:'meat' },
+      { id:301, name:'Bangus (Milkfish) 500g',        price:120, oldPrice:150,  discount:20, rating:5, sold:'1.1k', icon:'fa-fish',           location:'Iloilo', category:'seafood' },
+      { id:303, name:'Hipon (Shrimp) 250g',           price:180, oldPrice:220,  discount:18, rating:5, sold:'650',  icon:'fa-fish',           location:'Davao', category:'seafood' },
+      { id:401, name:'Lucky Me Pancit Canton 5-pack', price:55,  oldPrice:null, discount:0,  rating:5, sold:'2.3k', icon:'fa-store',          location:'Manila', category:'sarisari' },
+      { id:404, name:'Milo 300g Pack',                price:120, oldPrice:null, discount:0,  rating:5, sold:'950',  icon:'fa-store',          location:'Iloilo', category:'sarisari' },
+      { id:501, name:'Wilkins Mineral Water 1L x6',   price:99,  oldPrice:120,  discount:18, rating:5, sold:'1.5k', icon:'fa-tint',           location:'Manila', category:'drinks' },
+      { id:502, name:'Coca-Cola 1.5L',                price:65,  oldPrice:null, discount:0,  rating:4, sold:'2.2k', icon:'fa-wine-bottle',    location:'Cebu', category:'drinks' },
+    ];
+
+        document.addEventListener('DOMContentLoaded', function() {
+      if (typeof categoryProducts !== 'undefined') {
+        categoryProducts.forEach(function(p) {
+          if (!products.find(function(x) { return x.id === p.id; })) {
+            products.push(p);
+          }
+        });
+      }
+    });
 
 // ── STATE ─────────────────────────────────────────────────
 let cart = JSON.parse(localStorage.getItem('shopnow_cart') || '[]');
@@ -170,13 +175,20 @@ function initSearch() {
   });
 }
 
+// ── CATEGORY LINKS ──────────────────────────────────────────
+// Each category shortcut already links to category.html?cat=... in the
+// HTML, so clicking it navigates to that page in the same tab by default.
+// (No extra JS needed — kept as a no-op for compatibility.)
+function initCategoryClicks() {}
+
 // ── INJECT DATA-IDS onto existing cards ───────────────────
 function injectProductIds() {
+  // Only assign an id to cards that don't already have one in the HTML.
   document.querySelectorAll('.flash-sale .product-card').forEach(function(card, i) {
-    card.dataset.productId = i + 1;
+    if (!card.dataset.productId) card.dataset.productId = i + 1;
   });
   document.querySelectorAll('.recommended .product-card').forEach(function(card, i) {
-    card.dataset.productId = i + 6;
+    if (!card.dataset.productId) card.dataset.productId = i + 6;
   });
 }
 
@@ -313,7 +325,7 @@ function renderCheckout() {
     body = '<div class="co-form">' +
       '<h3>Delivery Address</h3>' +
       '<div class="co-form-row">' +
-      '<div class="co-field"><label>First Name</label><input type="text" placeholder="Name"/></div>' +
+      '<div class="co-field"><label>First Name</label><input type="text" placeholder="First Name"/></div>' +
       '<div class="co-field"><label>Last Name</label><input type="text" placeholder="Last Name"/></div>' +
       '</div>' +
       '<div class="co-field"><label>Phone Number</label><input type="tel" placeholder="+63 9XX XXX XXXX"/></div>' +
@@ -328,8 +340,6 @@ function renderCheckout() {
       '<span><strong>Standard Delivery</strong><em>3\u201520 minutes &nbsp;&bull;&nbsp; FREE on \u20B1200+</em></span></label>' +
       '<label class="co-radio"><input type="radio" name="delivery" value="Saver"/>' +
       '<span><strong>Saver Delivery</strong><em>1\u201530 minutes &nbsp;&bull;&nbsp; \u20B1149</em></span></label>' +
-      '<label class="co-radio"><input type="radio" name="delivery" value="Priority"/>' +
-      '<span><strong>Priority Delivery</strong><em>1\u201515 minutes &nbsp;&bull;&nbsp; \u20B1149</em></span></label>' +
       '</div></div></div>';
 
   } else if (checkoutStep === 3) {
@@ -513,4 +523,5 @@ document.addEventListener('DOMContentLoaded', function() {
   initCartClick();
   updateCartBadge();
   initSearch();
+  initCategoryClicks();
 });
