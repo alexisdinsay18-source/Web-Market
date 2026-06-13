@@ -4,16 +4,16 @@
 
 // ── PRODUCT DATA ──────────────────────────────────────────
 const products = [
-    { id:101, name:'Fresh Kangkong Bundle',         price:25,  oldPrice:null, discount:0,  rating:5, sold:'320',  icon:'fa-leaf',           location:'Iloilo', category:'vegetable' },
-      { id:103, name:'Tomato 1kg Pack',               price:80,  oldPrice:100,  discount:20, rating:5, sold:'540',  icon:'fa-apple-alt',      location:'Davao', category:'vegetable' },
-      { id:201, name:'Pork Liempo (Belly) 500g',      price:185, oldPrice:220,  discount:16, rating:5, sold:'890',  icon:'fa-drumstick-bite', location:'Cebu', category:'meat' },
-      { id:202, name:'Chicken Breast 1kg',            price:220, oldPrice:260,  discount:15, rating:4, sold:'1.2k', icon:'fa-drumstick-bite', location:'Manila', category:'meat' },
-      { id:301, name:'Bangus (Milkfish) 500g',        price:120, oldPrice:150,  discount:20, rating:5, sold:'1.1k', icon:'fa-fish',           location:'Iloilo', category:'seafood' },
-      { id:303, name:'Hipon (Shrimp) 250g',           price:180, oldPrice:220,  discount:18, rating:5, sold:'650',  icon:'fa-fish',           location:'Davao', category:'seafood' },
-      { id:401, name:'Lucky Me Pancit Canton 5-pack', price:55,  oldPrice:null, discount:0,  rating:5, sold:'2.3k', icon:'fa-store',          location:'Manila', category:'sarisari' },
-      { id:404, name:'Milo 300g Pack',                price:120, oldPrice:null, discount:0,  rating:5, sold:'950',  icon:'fa-store',          location:'Iloilo', category:'sarisari' },
-      { id:501, name:'Wilkins Mineral Water 1L x6',   price:99,  oldPrice:120,  discount:18, rating:5, sold:'1.5k', icon:'fa-tint',           location:'Manila', category:'drinks' },
-      { id:502, name:'Coca-Cola 1.5L',                price:65,  oldPrice:null, discount:0,  rating:4, sold:'2.2k', icon:'fa-wine-bottle',    location:'Cebu', category:'drinks' },
+    { id:101, name:'Fresh Kangkong Bundle',         price:25,  oldPrice:null, discount:0,  rating:5, sold:'320',  icon:'fa-leaf',           location:'Sta. Barbara', category:'vegetable' },
+      { id:103, name:'Tomato 1kg Pack',               price:80,  oldPrice:100,  discount:20, rating:5, sold:'540',  icon:'fa-apple-alt',      location:'Sta. Barbara', category:'vegetable' },
+      { id:201, name:'Pork Liempo (Belly) 500g',      price:185, oldPrice:220,  discount:16, rating:5, sold:'890',  icon:'fa-drumstick-bite', location:'Sta. Barbara', category:'meat' },
+      { id:202, name:'Chicken Breast 1kg',            price:220, oldPrice:260,  discount:15, rating:4, sold:'1.2k', icon:'fa-drumstick-bite', location:'Sta. Barbara', category:'meat' },
+      { id:301, name:'Bangus (Milkfish) 500g',        price:120, oldPrice:150,  discount:20, rating:5, sold:'1.1k', icon:'fa-fish',           location:'Sta. Barbara', category:'seafood' },
+      { id:303, name:'Hipon (Shrimp) 250g',           price:180, oldPrice:220,  discount:18, rating:5, sold:'650',  icon:'fa-fish',           location:'Sta. Barbara', category:'seafood' },
+      { id:401, name:'Lucky Me Pancit Canton 5-pack', price:55,  oldPrice:null, discount:0,  rating:5, sold:'2.3k', icon:'fa-store',          location:'Sta. Barbara', category:'sarisari' },
+      { id:404, name:'Milo 300g Pack',                price:120, oldPrice:null, discount:0,  rating:5, sold:'950',  icon:'fa-store',          location:'Sta. Barbara', category:'sarisari' },
+      { id:501, name:'Wilkins Mineral Water 1L x6',   price:99,  oldPrice:120,  discount:18, rating:5, sold:'1.5k', icon:'fa-tint',           location:'Sta. Barbara', category:'drinks' },
+      { id:502, name:'Coca-Cola 1.5L',                price:65,  oldPrice:null, discount:0,  rating:4, sold:'2.2k', icon:'fa-wine-bottle',    location:'Sta. Barbara', category:'drinks' },
     ];
 
         document.addEventListener('DOMContentLoaded', function() {
